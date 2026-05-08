@@ -136,15 +136,15 @@ vercel --prod
 ## Test with curl
 
 ```bash
-curl -X POST https://YOUR-VERCEL-URL/predict \
+curl -X POST https://personality-opal.vercel.app/predict \
   -H "Content-Type: application/json" \
   -d '{
-    "Time_spent_Alone": 7.0,
-    "Stage_fear": "Yes",
-    "Social_event_attendance": 2.0,
-    "Going_outside": 2.0,
-    "Drained_after_socializing": "Yes",
-    "Friends_circle_size": 3.0,
-    "Post_frequency": 2.0
-  }'
+  "Time_spent_Alone": 7.0,
+  "Stage_fear": "Yes",
+  "Social_event_attendance": 2.0,
+  "Going_outside": 2.0,
+  "Drained_after_socializing": "Yes",
+  "Friends_circle_size": 3.0,
+  "Post_frequency": 2.0
+}'
 ```
