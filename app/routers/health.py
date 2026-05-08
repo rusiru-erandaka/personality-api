@@ -1,4 +1,6 @@
 from fastapi import APIRouter
+
+from app.model_loader import get_pipeline
 from app.schemas import HealthResponse
 
 router = APIRouter()
@@ -9,8 +11,7 @@ router = APIRouter()
 def health_check():
     """Returns API status and whether the ML model is loaded."""
     try:
-        from app.model_loader import pipeline
-        model_loaded = pipeline is not None
+        model_loaded = get_pipeline() is not None
     except Exception:
         model_loaded = False
 

@@ -1,35 +1,19 @@
 """
-Model loader — loads the sklearn pipeline once at startup
-and exposes it as a module-level singleton.
+Model loader utilities for the serialized sklearn pipeline.
 """
 
+from pathlib import Path
 import sys
 
 import joblib
-from pathlib import Path
 
-# ── IMPORTANT: import before joblib.load() ───────────────────────────────
-# pickle needs to resolve encode_yes_no which was embedded in the
-# sklearn FunctionTransformer during training. Importing it here
-# registers it in the module namespace so pickle can find it.
-from app.preprocessor import encode_yes_no  # noqa: F401
+from app.preprocessor import encode_yes_no
 
-# ── Resolve model path ────────────────────────────────────────────────────
-BASE_DIR   = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "model" / "model.pkl"
 
-if not MODEL_PATH.exists():
-    raise FileNotFoundError(
-        f"model.pkl not found at {MODEL_PATH}. "
-        "Please place your trained model file in the /model directory."
-    )
-
-for module_name in ("__main__", "__mp_main__"):
-    module = sys.modules.get(module_name)
-    if module is not None:
-        setattr(module, "encode_yes_no", encode_yes_no)
-
-pipeline = joblib.load(MODEL_PATH)
+pipeline = None
+load_error = None
 
 FEATURE_ORDER = [
     "Time_spent_Alone",
@@ -40,3 +24,38 @@ FEATURE_ORDER = [
     "Friends_circle_size",
     "Post_frequency",
 ]
+
+
+def _register_pickle_symbols() -> None:
+    """
+    Make the training-time preprocessing function visible to pickle.
+    """
+    for module_name in ("__main__", "__mp_main__", "run", "app.main"):
+        module = sys.modules.get(module_name)
+        if module is not None:
+            setattr(module, "encode_yes_no", encode_yes_no)
+
+
+def get_pipeline():
+    """
+    Load the model once and cache it for subsequent invocations.
+    """
+    global pipeline, load_error
+
+    if pipeline is not None:
+        return pipeline
+
+    if not MODEL_PATH.exists():
+        load_error = f"model.pkl not found at {MODEL_PATH}"
+        raise FileNotFoundError(load_error)
+
+    _register_pickle_symbols()
+
+    try:
+        pipeline = joblib.load(MODEL_PATH)
+        load_error = None
+        return pipeline
+    except Exception as exc:
+        load_error = f"{type(exc).__name__}: {exc}"
+        print(f"Model load failed: {load_error}")
+        raise
