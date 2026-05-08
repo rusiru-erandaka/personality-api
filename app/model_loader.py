@@ -3,6 +3,8 @@ Model loader — loads the sklearn pipeline once at startup
 and exposes it as a module-level singleton.
 """
 
+import sys
+
 import joblib
 from pathlib import Path
 
@@ -21,6 +23,11 @@ if not MODEL_PATH.exists():
         f"model.pkl not found at {MODEL_PATH}. "
         "Please place your trained model file in the /model directory."
     )
+
+for module_name in ("__main__", "__mp_main__"):
+    module = sys.modules.get(module_name)
+    if module is not None:
+        setattr(module, "encode_yes_no", encode_yes_no)
 
 pipeline = joblib.load(MODEL_PATH)
 
