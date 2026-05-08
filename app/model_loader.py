@@ -3,16 +3,19 @@ Model loader — loads the sklearn pipeline once at startup
 and exposes it as a module-level singleton.
 """
 
-import os
 import joblib
 from pathlib import Path
 
+# ── IMPORTANT: import before joblib.load() ───────────────────────────────
+# pickle needs to resolve encode_yes_no which was embedded in the
+# sklearn FunctionTransformer during training. Importing it here
+# registers it in the module namespace so pickle can find it.
+from app.preprocessor import encode_yes_no  # noqa: F401
+
 # ── Resolve model path ────────────────────────────────────────────────────
-# Looks for model.pkl in the /model directory at project root.
 BASE_DIR   = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "model" / "model.pkl"
 
-# ── Load on import (Vercel spins up a fresh process per cold start) ────────
 if not MODEL_PATH.exists():
     raise FileNotFoundError(
         f"model.pkl not found at {MODEL_PATH}. "
