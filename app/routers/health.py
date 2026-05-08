@@ -18,5 +18,5 @@ def health_check():
     return HealthResponse(
         status="ok" if model_loaded else "error",
         model_loaded=model_loaded,
-        version="1.0.0",
+        version="1.0.3",
     )

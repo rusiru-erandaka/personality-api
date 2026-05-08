@@ -5,12 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class PredictRequest(BaseModel):
-    """
-    Input features for personality prediction.
-    All numeric fields are optional — missing values are
-    imputed by the model pipeline (median / mode strategy).
-    """
-
+    
     Time_spent_Alone: Optional[float] = Field(
         default=None,
         ge=0,

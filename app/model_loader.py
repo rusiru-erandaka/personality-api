@@ -1,6 +1,3 @@
-"""
-Model loader utilities for the serialized sklearn pipeline.
-"""
 
 from pathlib import Path
 import sys
