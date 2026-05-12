@@ -6,6 +6,11 @@ from app.schemas import PredictRequest, PredictResponse
 
 router = APIRouter()
 
+langfuse = Langfuse(
+    LANGFUSE_SECRET_KEY="sk-lf-5b32fb2b-7632-4012-863c-f21ab6fece17",
+    LANGFUSE_PUBLIC_KEY="pk-lf-a1e6b1da-c644-460a-a44a-1ca29bcc5fe4",
+    LANGFUSE_BASE_URL="https://cloud.langfuse.com"
+)
 
 @router.post(
     "/predict",
