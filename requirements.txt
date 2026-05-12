@@ -5,4 +5,4 @@ scikit-learn==1.6.1
 joblib==1.4.2
 numpy==2.2.5
 pandas==2.2.3
-langfuse
+langfuse==4.6.1
