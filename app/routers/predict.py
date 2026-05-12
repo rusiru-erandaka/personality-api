@@ -1,6 +1,6 @@
 import pandas as pd
 from fastapi import APIRouter, HTTPException
-
+from langfuse import Langfuse
 from app.model_loader import FEATURE_ORDER, get_pipeline
 from app.schemas import PredictRequest, PredictResponse
 
